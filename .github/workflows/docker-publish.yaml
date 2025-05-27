@@ -3,14 +3,13 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main    # 當 main 分支有推送時觸發
-
-env:
-  IMAGE: ghcr.io/eric12110/hello-service
+      - main
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      IMAGE: ghcr.io/eric12110/hello-service
 
     steps:
     - name: Checkout code
