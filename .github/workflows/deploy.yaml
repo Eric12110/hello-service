@@ -1,4 +1,4 @@
-name: Deploy to Minikube
+name: Build and Deploy to Minikube
 
 on:
   push:
@@ -6,28 +6,30 @@ on:
       - main
 
 jobs:
-  deploy:
-    runs-on: self-hosted
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-      - name: Build Docker image
-        run: |
-          docker build -t hello-service:latest .
+    - name: Build Docker image
+      run: |
+        docker build -t hello-service:latest .
 
-      - name: Load Docker image into Minikube
-        run: |
-          minikube image load hello-service:latest
+    - name: Setup Minikube Docker environment
+      run: |
+        curl -LO https://storage.googleapis.com/minikube/releases/latest/docker-env.sh
+        source docker-env.sh
+      shell: bash
 
-      - name: Apply Kubernetes manifests
-        run: |
-          kubectl apply -f k8s/hello-deployment.yaml
+    - name: Load image into Minikube
+      run: |
+        minikube image load hello-service:latest
 
-      - name: Check deployment status
-        run: |
-          kubectl rollout status deployment/hello-deployment
+    - name: Apply Kubernetes manifests
+      run: |
+        kubectl apply -f k8s/hello-deployment.yaml
