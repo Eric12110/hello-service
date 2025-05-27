@@ -11,13 +11,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Create kubeconfig from base64
+        run: |
+          echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > kubeconfig.yaml
+        shell: bash
 
+      - name: Set KUBECONFIG
+        run: echo "KUBECONFIG=$(pwd)/kubeconfig.yaml" >> $GITHUB_ENV
+
+      - name: Deploy to Minikube
+        run: kubectl apply -f k8s/hello-deployment.yaml
+        
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-docker-${{ hashFiles('Dockerfile') }}-v2
-          
+
       - name: Cache node modules
         uses: actions/cache@v3
         with:

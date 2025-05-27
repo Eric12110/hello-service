@@ -36,9 +36,10 @@ jobs:
       with:
         version: latest
 
-    - name: Decode kubeconfig and deploy
+    - name: Decode kubeconfig
       run: |
         echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > kubeconfig.yaml
         export KUBECONFIG=$(pwd)/kubeconfig.yaml
         kubectl apply -f k8s/hello-deployment.yaml
+
 
