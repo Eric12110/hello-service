@@ -1,0 +1,33 @@
+name: Deploy to Minikube
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t hello-service:latest .
+
+      - name: Load Docker image into Minikube
+        run: |
+          minikube image load hello-service:latest
+
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/hello-deployment.yaml
+
+      - name: Check deployment status
+        run: |
+          kubectl rollout status deployment/hello-deployment
