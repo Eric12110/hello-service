@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+  packages: write
+
 env:
   IMAGE: ghcr.io/eric12110/hello-service
 
@@ -36,4 +40,4 @@ jobs:
       run: |
         echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
         export KUBECONFIG=kubeconfig.yaml
-        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/hello-deployment.yaml
